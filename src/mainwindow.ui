@@ -159,7 +159,7 @@ border-top: 0px;
      <x>0</x>
      <y>0</y>
      <width>1013</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -173,8 +173,8 @@ border-top: 0px;
      <rect>
       <x>273</x>
       <y>136</y>
-      <width>156</width>
-      <height>182</height>
+      <width>148</width>
+      <height>167</height>
      </rect>
     </property>
     <property name="title">
@@ -197,7 +197,7 @@ border-top: 0px;
     <addaction name="actionAssembler"/>
     <addaction name="actionSDB_browser"/>
    </widget>
-   <widget class="QMenu" name="menuWorkspace">
+   <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
     </property>
@@ -214,6 +214,10 @@ border-top: 0px;
     <addaction name="separator"/>
     <addaction name="actionWhite_Theme"/>
     <addaction name="actionDark_Theme"/>
+    <addaction name="separator"/>
+    <addaction name="actionDisplay_Esil"/>
+    <addaction name="actionDisplay_Pseudocode"/>
+    <addaction name="actionDisplay_Offsets"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -242,7 +246,7 @@ border-top: 0px;
     <addaction name="actionFind_next"/>
     <addaction name="actionFind_previous"/>
    </widget>
-   <widget class="QMenu" name="menuView">
+   <widget class="QMenu" name="menuWindows">
     <property name="title">
      <string>Windows</string>
     </property>
@@ -264,9 +268,9 @@ border-top: 0px;
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuWorkspace"/>
-   <addaction name="menuTools"/>
    <addaction name="menuView"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuWindows"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="sideToolBar">
@@ -882,7 +886,7 @@ QToolButton .svg-icon path {
     <string>Dashboard</string>
    </property>
    <property name="toolTip">
-    <string>Show/HIde Dashboard panel</string>
+    <string>Show/Hide Dashboard panel</string>
    </property>
   </action>
   <action name="actionReset_settings">
@@ -917,9 +921,36 @@ QToolButton .svg-icon path {
     <string>Refresh contents</string>
    </property>
   </action>
+  <action name="actionDisplay_Esil">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show ESIL rather than assembly</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Pseudocode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show pseudocode rather than assembly</string>
+   </property>
+  </action>
   <action name="actionEntry_points">
    <property name="text">
     <string>Entry points</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Offsets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display offsets</string>
    </property>
   </action>
  </widget>
