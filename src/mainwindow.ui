@@ -204,6 +204,11 @@ border-top: 0px;
     <property name="tabsOnTop" stdset="0">
      <bool>false</bool>
     </property>
+    <widget class="QMenu" name="menuAsm_syntax">
+     <property name="title">
+      <string>Asm syntax</string>
+     </property>
+    </widget>
     <addaction name="actionRefresh_contents"/>
     <addaction name="separator"/>
     <addaction name="actionDefaut"/>
@@ -218,6 +223,7 @@ border-top: 0px;
     <addaction name="actionDisplay_Esil"/>
     <addaction name="actionDisplay_Pseudocode"/>
     <addaction name="actionDisplay_Offsets"/>
+    <addaction name="menuAsm_syntax"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -480,6 +486,12 @@ QToolButton .svg-icon path {
    </property>
   </action>
   <action name="actionLock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Toggle Panel Locks</string>
    </property>
@@ -641,6 +653,9 @@ QToolButton .svg-icon path {
    </property>
   </action>
   <action name="actionTabs_on_Top">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Toggle Tab Position</string>
    </property>
