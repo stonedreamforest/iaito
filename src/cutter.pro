@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-TARGET = iaito
+TARGET = cutter
 
 # The application version
 win32 {
@@ -39,7 +39,7 @@ SOURCES += \
     newfiledialog.cpp \
     optionsdialog.cpp \
     highlighter.cpp \
-    qrcore.cpp \
+    cutter.cpp \
     createnewdialog.cpp \
     hexascii_highlighter.cpp \
     widgets/pieview.cpp \
@@ -58,7 +58,6 @@ SOURCES += \
     widgets/flagswidget.cpp \
     widgets/memorywidget.cpp \
     widgets/exportswidget.cpp \
-    qrdisasm.cpp \
     widgets/sdbdock.cpp \
     analthread.cpp \
     dialogs/commentsdialog.cpp \
@@ -112,8 +111,7 @@ HEADERS  += \
     radarewebserver.h \
     settings.h \
     widgets/entrypointwidget.h \
-    iaitorcore.h \
-    iaitordisasm.h \
+    cutter.h \
     dialogs/flagdialog.h
 FORMS    += \
     mainwindow.ui \
@@ -145,7 +143,7 @@ FORMS    += \
 RESOURCES += \
     resources.qrc
 
-DISTFILES += iaito.astylerc
+DISTFILES += cutter.astylerc
 
 
 include(lib_radare2.pri)
@@ -157,13 +155,13 @@ unix {
         PREFIX = /usr/local
     }
 
-    icon_file = img/iaito-small.png
+    icon_file = img/cutter-small.png
 
     share_pixmaps.path = $$PREFIX/share/pixmaps
     share_pixmaps.files = $$icon_file
 
 
-    desktop_file = iaito.desktop
+    desktop_file = cutter.desktop
 
     # built-in no need for files atm
     target.path = $$PREFIX/bin
@@ -175,12 +173,12 @@ unix {
 
     # Triggered for example by 'qmake APPIMAGE=1'
     !isEmpty(APPIMAGE){
-        # UGLY work around for the logo name in iaito.desktop
-        # Would be better to have a file called iaito.png in the first place
-        system(cp img/iaito-small.png $$OUT_PWD/iaito-small.png)
+        # UGLY work around for the logo name in cutter.desktop
+        # Would be better to have a file called cutter.png in the first place
+        system(cp img/cutter-small.png $$OUT_PWD/cutter-small.png)
 
         appimage_root.path = /
-        appimage_root.files = $$OUT_PWD/iaito.png $$desktop_file
+        appimage_root.files = $$OUT_PWD/cutter.png $$desktop_file
 
         INSTALLS += appimage_root
     }

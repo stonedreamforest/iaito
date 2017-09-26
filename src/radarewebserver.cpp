@@ -1,11 +1,10 @@
-#include "radarewebserver.h"
-#include "iaitorcore.h"
 #include <QCoreApplication>
 #include <QProcessEnvironment>
 #include <cassert>
+#include "cutter.h"
+#include "radarewebserver.h"
 
-
-RadareWebServer::RadareWebServer(IaitoRCore *core) :
+RadareWebServer::RadareWebServer(CutterCore *core) :
     core(core),
     started(false)
 {
@@ -24,7 +23,7 @@ void RadareWebServer::start()
     QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
     if (env.contains("APPIMAGE") && env.contains("APPDIR") && env.contains("OWD"))
     {
-        // pretty sure now iaito runs as AppImage
+        // pretty sure now cutter runs as AppImage
 
         //QString defaultPath("/usr/share/radare2/1.5.0-git/www");
         QString defaultHttpRoot(core->config("http.root"));
