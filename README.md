@@ -4,6 +4,9 @@
 
 A Qt and C++ GUI for radare2 reverse engineering framework
 
+# IMPORTANT NOTICE
+The project was moved to https://github.com/radareorg/cutter
+
 ## Screenshot
 
 ![Screenshot](https://raw.githubusercontent.com/hteso/iaito/master/Screenshots/Screenshot.png)
@@ -25,9 +28,9 @@ Yes, the code sucks. Hopefully we will be able to remove this statement from the
 sys/install.sh
 ```
 
-- QtCreator and Qt: Right now Iaitō uses Qt 5.6, you will need the latest QtCreator and Qt 5.6 added during the installation:
+- QtCreator and Qt: Right now Iaitō uses Qt 5.9.1, you will need the latest QtCreator and Qt added during the installation:
     - Download: https://www.qt.io/ide/
-    - Add Qt 5.6: http://doc.qt.io/qtcreator/creator-project-qmake.html
+    - Add Qt 5.9.1: http://doc.qt.io/qtcreator/creator-project-qmake.html
 
 ## Platforms
 
