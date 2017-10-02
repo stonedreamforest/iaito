@@ -44,8 +44,6 @@ public:
     RCore *operator->() const;
 };
 
-#define CUTTERNOTUSED(x) do { (void)(x); } while ( 0 );
-
 typedef ut64 RVA;
 
 #define RVA_INVALID UT64_MAX
@@ -155,6 +153,14 @@ struct XrefDescription
     QString type;
 };
 
+struct RBinPluginDescription
+{
+    QString name;
+    QString description;
+    QString license;
+    QString type;
+};
+
 Q_DECLARE_METATYPE(FunctionDescription)
 Q_DECLARE_METATYPE(ImportDescription)
 Q_DECLARE_METATYPE(ExportDescription)
@@ -166,6 +172,7 @@ Q_DECLARE_METATYPE(FlagspaceDescription)
 Q_DECLARE_METATYPE(FlagDescription)
 Q_DECLARE_METATYPE(XrefDescription)
 Q_DECLARE_METATYPE(EntrypointDescription)
+Q_DECLARE_METATYPE(RBinPluginDescription)
 
 class CutterCore: public QObject
 {
@@ -192,17 +199,23 @@ public:
     void delComment(ut64 addr);
     QMap<QString, QList<QList<QString>>> getNestedComments();
     void setOptions(QString key);
-    bool loadFile(QString path, uint64_t loadaddr = 0LL, uint64_t mapaddr = 0LL, bool rw = false, int va = 0, int idx = 0, bool loadbin = false);
+    bool loadFile(QString path, uint64_t loadaddr = 0LL, uint64_t mapaddr = 0LL, bool rw = false, int va = 0, int idx = 0, bool loadbin = false, const QString &forceBinPlugin = nullptr);
     bool tryFile(QString path, bool rw);
     void analyze(int level, QList<QString> advanced);
     void seek(QString addr);
     void seek(ut64 offset);
     ut64 math(const QString &expr);
     QString itoa(ut64 num, int rdx = 16);
-    QString config(const QString &k, const QString &v = NULL);
-    int config(const QString &k, int v);
+
+    void setConfig(const QString &k, const QString &v);
+    void setConfig(const QString &k, int v);
+    void setConfig(const QString &k, bool v);
+    void setConfig(const QString &k, const char *v)     { setConfig(k, QString(v)); }
+
     int getConfigi(const QString &k);
+    bool getConfigb(const QString &k);
     QString getConfig(const QString &k);
+
     QString assemble(const QString &code);
     QString disassemble(const QString &hex);
     QString disassembleSingleInstruction(RVA addr);
@@ -241,6 +254,8 @@ public:
 
     QStringList getProjectNames();
 
+    QList<RBinPluginDescription> getRBinPluginDescriptions(const QString &type = nullptr);
+
     QList<FunctionDescription> getAllFunctions();
     QList<ImportDescription> getAllImports();
     QList<ExportDescription> getAllExports();
@@ -257,6 +272,11 @@ public:
 
     void addFlag(RVA offset, QString name, RVA size);
 
+    void triggerAsmOptionsChanged();
+
+    void resetDefaultAsmOptions();
+    void saveDefaultAsmOptions();
+
     RCoreLocked core() const;
 
     /* fields */
@@ -268,6 +288,11 @@ signals:
     void functionRenamed(QString prev_name, QString new_name);
     void flagsChanged();
     void commentsChanged();
+
+    /*!
+     * emitted when config regarding disassembly display changes
+     */
+    void asmOptionsChanged();
 
 public slots:
 

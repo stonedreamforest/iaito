@@ -4,8 +4,8 @@
 
 #include "commentswidget.h"
 #include "ui_commentswidget.h"
-#include "mainwindow.h"
-#include "helpers.h"
+#include "MainWindow.h"
+#include "utils/Helpers.h"
 
 CommentsWidget::CommentsWidget(MainWindow *main, QWidget *parent) :
     DockWidget(parent),
@@ -49,7 +49,7 @@ void CommentsWidget::refresh()
 
 void CommentsWidget::on_commentsTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    CUTTERNOTUSED(column);
+    Q_UNUSED(column);
 
     // Get offset and name of item double clicked
     CommentDescription comment = item->data(0, Qt::UserRole).value<CommentDescription>();

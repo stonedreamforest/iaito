@@ -3,8 +3,8 @@
 #include "stringswidget.h"
 #include "ui_stringswidget.h"
 
-#include "mainwindow.h"
-#include "helpers.h"
+#include "MainWindow.h"
+#include "utils/Helpers.h"
 
 
 StringsWidget::StringsWidget(MainWindow *main, QWidget *parent) :
@@ -36,7 +36,7 @@ void StringsWidget::refresh()
 
 void StringsWidget::on_stringsTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    CUTTERNOTUSED(column);
+    Q_UNUSED(column);
 
     // Get offset and name of item double clicked
     // TODO: use this info to change disasm contents

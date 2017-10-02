@@ -1,8 +1,8 @@
 #include "widgets/sectionswidget.h"
 #include "widgets/pieview.h"
 
-#include "mainwindow.h"
-#include "helpers.h"
+#include "MainWindow.h"
+#include "utils/Helpers.h"
 
 #include <QtWidgets>
 #include <QTreeWidget>
@@ -11,7 +11,7 @@ SectionsWidget::SectionsWidget(MainWindow *main, QWidget *parent) :
     QSplitter(main),
     main(main)
 {
-    CUTTERNOTUSED(parent);
+    Q_UNUSED(parent);
 
     setupViews();
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);

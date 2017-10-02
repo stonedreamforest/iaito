@@ -7,7 +7,7 @@ The project was moved to https://github.com/radareorg/cutter
 
 ## Screenshot
 
-![Screenshot](https://raw.githubusercontent.com/radareorg/cutter/master/Screenshots/Screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/radareorg/cutter/master/docs/screenshot.png)
 
 ## Disclaimer
 
@@ -23,7 +23,7 @@ sys/install.sh
 ```
 
 - QtCreator and Qt: Right now *cutter* uses Qt 5.9.1, you will need the latest QtCreator and Qt added during the installation:
-    - Download: https://www.qt.io/ide/
+    - Download: [Qt Open Source](https://info.qt.io/download-qt-for-application-development)
     - Add Qt 5.9.1: http://doc.qt.io/qtcreator/creator-project-qmake.html
 
 ## Platforms
@@ -34,7 +34,7 @@ Cutter is developed on OS X, Linux and Windows. The first release for users will
 
 Proper documentation and website will be created before the first release.
 
-Roadmap information for developers can be found [here](https://github.com/radareorg/cutter/tree/master/docs/Roadmap.md).
+Roadmap information for developers can be found [here](docs/Roadmap.md).
 
 ## Help
 

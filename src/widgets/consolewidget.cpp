@@ -7,7 +7,7 @@
 #include "cutter.h"
 #include "consolewidget.h"
 #include "ui_consolewidget.h"
-#include "helpers.h"
+#include "utils/Helpers.h"
 
 
 // TODO: Find a way to get to this without copying it here
@@ -183,7 +183,7 @@ void ConsoleWidget::on_inputLineEdit_returnPressed()
     QString input = ui->inputLineEdit->text();
     if (!input.isEmpty() && core != nullptr)
     {
-        if (true || !isForbidden(input))
+        if (!isForbidden(input))
         {
             ui->outputTextEdit->appendPlainText(this->core->cmd(input));
             scrollOutputToEnd();

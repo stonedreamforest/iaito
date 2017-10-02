@@ -3,8 +3,8 @@
 #include <QComboBox>
 #include "flagswidget.h"
 #include "ui_flagswidget.h"
-#include "mainwindow.h"
-#include "helpers.h"
+#include "MainWindow.h"
+#include "utils/Helpers.h"
 
 FlagsModel::FlagsModel(QList<FlagDescription> *flags, QObject *parent)
     : QAbstractListModel(parent),
@@ -165,7 +165,7 @@ void FlagsWidget::on_flagsTreeView_doubleClicked(const QModelIndex &index)
 
 void FlagsWidget::on_flagspaceCombo_currentTextChanged(const QString &arg1)
 {
-    CUTTERNOTUSED(arg1);
+    Q_UNUSED(arg1);
 
     refreshFlags();
 }

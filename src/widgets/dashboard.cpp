@@ -1,7 +1,7 @@
 #include "dashboard.h"
 #include "ui_dashboard.h"
 
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 #include <QDebug>
 #include <QJsonArray>
@@ -14,12 +14,10 @@
 
 Dashboard::Dashboard(MainWindow *main, QWidget *parent) :
     DockWidget(parent),
-    ui(new Ui::Dashboard)
+    ui(new Ui::Dashboard),
+    main(main)
 {
     ui->setupUi(this);
-
-    // Radare core found in:
-    this->main = main;
 
     //this->updateContents();
 }
