@@ -10,14 +10,13 @@
 #include <QUrl>
 #include <QPlainTextEdit>
 #include <QMouseEvent>
+#include <memory>
 #include "cutter.h"
 #include "utils/Highlighter.h"
 #include "utils/HexAsciiHighlighter.h"
 #include "utils/HexHighlighter.h"
-#include "dashboard.h"
-#include "widgets/DisassemblerGraphView.h"
+#include "Dashboard.h"
 
-class MainWindow;
 
 namespace Ui
 {
@@ -29,14 +28,13 @@ class MemoryWidget : public DockWidget
     Q_OBJECT
 
 public:
-    explicit MemoryWidget(MainWindow *main);
+    explicit MemoryWidget();
     ~MemoryWidget();
 
     void setup() override;
 
     void refresh() override;
 
-    MainWindow       *main;
     QPlainTextEdit   *disasTextEdit;
     QTextEdit        *hexOffsetText;
     QPlainTextEdit   *hexDisasTextEdit;
@@ -46,7 +44,6 @@ public:
     QTreeWidget      *xreFromTreeWidget_2;
     QTabWidget       *memTabWidget;
     QWebEngineView         *histoWebView;
-    DisassemblerGraphView *mGraphView;
 
     Highlighter        *highlighter;
     Highlighter        *highlighter_5;
@@ -87,8 +84,6 @@ public slots:
 
     void selectHexPreview();
 
-    void updateViews(RVA offset = RVA_INVALID);
-
     void showOffsets(bool show);
 
 protected:
@@ -96,7 +91,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
-    Ui::MemoryWidget *ui;
+    std::unique_ptr<Ui::MemoryWidget> ui;
+    CutterCore *core;
 
     ut64 hexdumpTopOffset;
     ut64 hexdumpBottomOffset;
@@ -116,8 +112,8 @@ private:
     bool loadMoreDisassembly();
 
 private slots:
-    void on_globalSeekTo(RVA addr);
     void on_cursorAddressChanged(RVA addr);
+    void on_seekChanged(RVA addr);
 
     void highlightCurrentLine();
 
@@ -133,16 +129,13 @@ private slots:
     void on_actionHideDisasm_side_panel_triggered();
     void on_actionHideHexdump_side_panel_triggered();
     void on_actionHideGraph_side_panel_triggered();
+
     void on_disasButton_clicked();
-    void on_graphButton_clicked();
     void on_hexButton_clicked();
     void showDisasContextMenu(const QPoint &pt);
     void showHexdumpContextMenu(const QPoint &pt);
     void showHexASCIIContextMenu(const QPoint &pt);
     void on_actionSend_to_Notepad_triggered();
-    void on_actionDisasAdd_comment_triggered();
-    void on_actionAddFlag_triggered();
-    void on_actionFunctionsRename_triggered();
 
     void on_hexHexText_2_selectionChanged();
     void on_hexArchComboBox_2_currentTextChanged(const QString &arg1);
@@ -162,9 +155,7 @@ private slots:
     QList<QString> get_hexdump(const QString &offset);
 
     void showXrefsDialog();
-    //void showDisas();
-    //void showHexdump();
-    //void showGraph();
+    void updateViews(RVA offset = RVA_INVALID);
     void cycleViews();
     void on_xreFromTreeWidget_2_itemDoubleClicked(QTreeWidgetItem *item, int column);
     void on_xrefToTreeWidget_2_itemDoubleClicked(QTreeWidgetItem *item, int column);
@@ -180,7 +171,6 @@ private slots:
     void on_previewToolButton_clicked();
     void on_decoToolButton_clicked();
     void on_previewToolButton_2_clicked();
-    void on_actionXRefs_triggered();
     void on_copyMD5_clicked();
     void on_copySHA1_clicked();
     void on_simpleGrapgToolButton_clicked();

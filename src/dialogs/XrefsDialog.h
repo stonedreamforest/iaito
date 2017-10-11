@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTreeWidgetItem>
+#include <memory>
 #include "utils/Highlighter.h"
 #include "cutter.h"
 
@@ -18,7 +19,7 @@ class XrefsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit XrefsDialog(MainWindow *main, QWidget *parent = 0);
+    explicit XrefsDialog(QWidget *parent = 0);
     ~XrefsDialog();
 
     void fillRefsForAddress(RVA addr, QString name, bool whole_function);
@@ -40,8 +41,8 @@ private:
     RVA addr;
     QString func_name;
 
-    Ui::XrefsDialog *ui;
-    MainWindow *main;
+    std::unique_ptr<Ui::XrefsDialog> ui;
+    CutterCore *core;
 
     Highlighter      *highlighter;
 

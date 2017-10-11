@@ -19,6 +19,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include "cutter.h"
+#include "MainWindow.h"
 #include "utils/RichTextPainter.h"
 #include "utils/CachedFontMetrics.h"
 
@@ -207,7 +208,7 @@ public:
         Narrow,
     };
 
-    DisassemblerGraphView(QWidget *parent, CutterCore *core);
+    DisassemblerGraphView(QWidget *parent);
     ~DisassemblerGraphView();
     void initFont();
     void adjustSize(int width, int height);
@@ -257,6 +258,7 @@ signals:
 
 public slots:
     void updateTimerEvent();
+    void on_seekChanged(RVA);
     //void loadGraphSlot(BridgeCFGraphList* graph, duint addr);
     void graphAtSlot(duint addr);
     void updateGraphSlot();
@@ -284,7 +286,7 @@ public slots:
     void decompileSlot();
 
 private:
-    CutterCore *mCore;
+    MainWindow* main;
     QString status;
     Analysis analysis;
     duint function;

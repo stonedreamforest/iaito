@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-#include "dialogs/CreatenewDialog.h"
+#include "dialogs/CreateNewDialog.h"
 #include "dialogs/CommentsDialog.h"
 #include "dialogs/AboutDialog.h"
 #include "dialogs/RenameDialog.h"
@@ -38,29 +38,29 @@
 #include "utils/Highlighter.h"
 #include "utils/HexAsciiHighlighter.h"
 #include "utils/Helpers.h"
-#include "dialogs/NewfileDialog.h"
+#include "dialogs/NewFileDialog.h"
 
 #include "widgets/MemoryWidget.h"
-#include "widgets/functionswidget.h"
-#include "widgets/sectionswidget.h"
-#include "widgets/commentswidget.h"
-#include "widgets/importswidget.h"
-#include "widgets/exportswidget.h"
-#include "widgets/symbolswidget.h"
-#include "widgets/stringswidget.h"
-#include "widgets/sectionsdock.h"
-#include "widgets/relocswidget.h"
-#include "widgets/flagswidget.h"
-#include "widgets/codegraphic.h"
-#include "widgets/dashboard.h"
-#include "widgets/notepad.h"
-#include "widgets/sidebar.h"
-#include "widgets/sdbdock.h"
-#include "widgets/omnibar.h"
-#include "widgets/consolewidget.h"
+#include "widgets/FunctionsWidget.h"
+#include "widgets/SectionsWidget.h"
+#include "widgets/CommentsWidget.h"
+#include "widgets/ImportsWidget.h"
+#include "widgets/ExportsWidget.h"
+#include "widgets/SymbolsWidget.h"
+#include "widgets/StringsWidget.h"
+#include "widgets/SectionsDock.h"
+#include "widgets/RelocsWidget.h"
+#include "widgets/FlagsWidget.h"
+#include "widgets/CodeGraphic.h"
+#include "widgets/Dashboard.h"
+#include "widgets/Notepad.h"
+#include "widgets/Sidebar.h"
+#include "widgets/SdbDock.h"
+#include "widgets/Omnibar.h"
+#include "widgets/ConsoleWidget.h"
 #include "Settings.h"
 #include "dialogs/OptionsDialog.h"
-#include "widgets/entrypointwidget.h"
+#include "widgets/EntrypointWidget.h"
 #include "widgets/DisassemblerGraphView.h"
 
 // graphics
@@ -84,7 +84,7 @@ static void registerCustomFonts()
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    core(new CutterCore()),
+    core(CutterCore::getInstance()),
     memoryDock(nullptr),
     notepadDock(nullptr),
     asmDock(nullptr),
@@ -113,16 +113,12 @@ MainWindow::MainWindow(QWidget *parent) :
     webserver(core)
 {
     doLock = false;
-    this->cursor_address = core->getOffset();
 }
 
 MainWindow::~MainWindow()
 {
-    qDeleteAll(asmSyntaxes);
-    delete ui;
     delete core;
 }
-
 
 void MainWindow::initUI()
 {
@@ -136,7 +132,7 @@ void MainWindow::initUI()
     // Hide central tab widget tabs
     QTabBar *centralbar = ui->centralTabWidget->tabBar();
     centralbar->setVisible(false);
-    consoleWidget = new ConsoleWidget(core, this);
+    consoleWidget = new ConsoleWidget(this);
     ui->tabVerticalLayout->addWidget(consoleWidget);
 
     // Sepparator between back/forward and undo/redo buttons
@@ -187,8 +183,15 @@ void MainWindow::initUI()
      */
     dockWidgets.reserve(12);
 
+    // Add graph view as dockable
+    graphDock = new QDockWidget(tr("Graph"), this);
+    graphDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    DisassemblerGraphView *gv = new DisassemblerGraphView(graphDock);
+    graphDock->setWidget(gv);
+    dockWidgets.push_back(graphDock);
+
     // Add Memory DockWidget
-    this->memoryDock = new MemoryWidget(this);
+    this->memoryDock = new MemoryWidget();
     dockWidgets.push_back(memoryDock);
     // To use in the future when we handle more than one memory views
     // this->memoryDock->setAttribute(Qt::WA_DeleteOnClose);
@@ -500,6 +503,8 @@ void MainWindow::refreshComments()
 
 void MainWindow::updateFrames()
 {
+    /* TODO Widgets are independants and responsible to update their own
+     * content right? Just send a signal.
     if (core == NULL)
         return;
 
@@ -524,6 +529,7 @@ void MainWindow::updateFrames()
 
     // graphicsBar->refreshColorBar();
     graphicsBar->fillData();
+    */
 }
 
 void MainWindow::on_actionLock_triggered()
@@ -604,7 +610,7 @@ void MainWindow::on_actionMem_triggered()
 {
     //this->memoryDock->show();
     //this->memoryDock->raise();
-    MemoryWidget *newMemDock = new MemoryWidget(this);
+    MemoryWidget *newMemDock = new MemoryWidget();
     this->dockWidgets << newMemDock;
     newMemDock->setAttribute(Qt::WA_DeleteOnClose);
     this->tabifyDockWidget(this->memoryDock, newMemDock);
@@ -691,55 +697,19 @@ void MainWindow::toggleDockWidget(DockWidget *dock_widget)
     }
 }
 
-void MainWindow::seek(const QString &offset, const QString &name, bool raise_memory_dock)
+void MainWindow::setCursorAddress(RVA addr)
 {
-    // TODO: remove this method and use the one with RVA only!
-
-    if (offset.length() < 2)
-        return;
-
-    bool ok;
-    RVA addr = offset.mid(2).toULongLong(&ok, 16);
-    if (!ok)
-        return;
-
-    seek(addr, name, raise_memory_dock);
+    this->cursorAddress = addr;
+    emit cursorAddressChanged(core->getOffset());
 }
-
-
-void MainWindow::seek(const RVA offset, const QString &name, bool raise_memory_dock)
-{
-    {
-        this->memoryDock->setWindowTitle(name);
-        //this->current_address = name;
-    }
-    this->hexdumpTopOffset = 0;
-    this->hexdumpBottomOffset = 0;
-    core->seek(offset);
-    emit globalSeekTo(offset);
-    setCursorAddress(offset);
-
-    //refreshMem();
-    this->memoryDock->disasTextEdit->setFocus();
-
-    // Rise and shine baby!
-    if (raise_memory_dock)
-        this->memoryDock->raise();
-}
-
-void MainWindow::refreshMem()
-{
-    this->memoryDock->updateViews();
-}
-
 
 void MainWindow::backButton_clicked()
 {
     QList<RVA> seek_history = core->getSeekHistory();
     this->core->cmd("s-");
     RVA offset = this->core->getOffset();
-    QString fcn = this->core->cmdFunctionAt(QString::number(offset));
-    this->seek(offset, fcn);
+    //QString fcn = this->core->cmdFunctionAt(QString::number(offset));
+    core->seek(offset);
 }
 
 void MainWindow::on_actionCalculator_triggered()
@@ -752,7 +722,7 @@ void MainWindow::on_actionCalculator_triggered()
 
 void MainWindow::on_actionCreate_File_triggered()
 {
-    createNewDialog *n = new createNewDialog(this);
+    CreateNewDialog *n = new CreateNewDialog(this);
     n->exec();
 }
 
@@ -780,6 +750,7 @@ void MainWindow::restoreDocks()
     addDockWidget(Qt::RightDockWidgetArea, sectionsDock);
     addDockWidget(Qt::TopDockWidgetArea, this->dashboardDock);
     this->tabifyDockWidget(sectionsDock, this->commentsDock);
+    this->tabifyDockWidget(this->dashboardDock, this->graphDock);
     this->tabifyDockWidget(this->dashboardDock, this->memoryDock);
     this->tabifyDockWidget(this->dashboardDock, this->entrypointDock);
     this->tabifyDockWidget(this->dashboardDock, this->functionsDock);
@@ -813,7 +784,8 @@ void MainWindow::hideAllDocks()
 
 void MainWindow::showDefaultDocks()
 {
-    const QList<DockWidget *> defaultDocks = { sectionsDock,
+    const QList<QDockWidget *> defaultDocks = { sectionsDock,
+                                               graphDock,
                                                entrypointDock,
                                                functionsDock,
                                                memoryDock,
@@ -895,7 +867,6 @@ void MainWindow::on_actionRun_Script_triggered()
 
     qDebug() << "Meow: " + fileName;
     this->core->cmd(". " + fileName);
-    this->refreshMem();
 }
 
 void MainWindow::on_actionDark_Theme_triggered()
@@ -953,7 +924,7 @@ void MainWindow::on_actionForward_triggered()
     this->core->cmd("s+");
     RVA offset = core->getOffset();
     this->addDebugOutput(QString::number(offset));
-    this->seek(offset);
+    core->seek(offset);
 }
 
 void MainWindow::toggleResponsive(bool maybe)
@@ -988,15 +959,10 @@ void MainWindow::on_actionQuit_triggered()
     close();
 }
 
-void MainWindow::setCursorAddress(RVA addr)
-{
-    this->cursor_address = addr;
-    emit cursorAddressChanged(addr);
-}
-
 void MainWindow::refreshVisibleDockWidgets()
 {
-    // There seems to be no convenience function to check if a QDockWidget
+    /* TODO Just send a signal no?
+     * // There seems to be no convenience function to check if a QDockWidget
     // is really visible or hidden in a tabbed dock. So:
     auto isDockVisible = [](const QDockWidget * const pWidget)
     {
@@ -1010,6 +976,7 @@ void MainWindow::refreshVisibleDockWidgets()
             w->refresh();
         }
     }
+    */
 }
 
 void MainWindow::on_actionRefresh_contents_triggered()
@@ -1019,6 +986,6 @@ void MainWindow::on_actionRefresh_contents_triggered()
 
 void MainWindow::on_actionAsmOptions_triggered()
 {
-    auto dialog = new AsmOptionsDialog(core, this);
+    auto dialog = new AsmOptionsDialog(this);
     dialog->show();
 }

@@ -2,6 +2,7 @@
 #define FLAGDIALOG_H
 
 #include <QDialog>
+#include <memory>
 #include "cutter.h"
 
 namespace Ui
@@ -14,7 +15,7 @@ class FlagDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit FlagDialog(CutterCore *core, RVA offset, QWidget *parent = 0);
+    explicit FlagDialog(RVA offset, QWidget *parent = 0);
     ~FlagDialog();
 
 private slots:
@@ -22,10 +23,9 @@ private slots:
     void on_buttonBox_rejected();
 
 private:
-    Ui::FlagDialog *ui;
-
-    CutterCore *core;
+    std::unique_ptr<Ui::FlagDialog> ui;
     RVA offset;
+    CutterCore *core;
 };
 
 #endif // FLAGDIALOG_H

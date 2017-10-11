@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 #include <QList>
-#include "radarewebserver.h"
+#include <memory>
+#include "RadareWebServer.h"
 #include "cutter.h" // only needed for ut64
 
 class CutterCore;
@@ -44,10 +45,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    CutterCore *core;
-    MemoryWidget    *memoryDock;
-    Notepad         *notepadDock;
-
     bool responsive;
 
     explicit MainWindow(QWidget *parent = 0);
@@ -63,9 +60,7 @@ public:
     void closeEvent(QCloseEvent *event);
     void readSettings();
     void setFilename(const QString &fn);
-    //void setCore(QRCore *core);
-    void seek(const QString &offset, const QString &name = NULL, bool raise_memory_dock = false);
-    void seek(const RVA offset, const QString &name = NULL, bool raise_memory_dock = false);
+    void seek(RVA offset);
     void updateFrames();
     void refreshFunctions();
     void refreshComments();
@@ -78,8 +73,7 @@ public:
     void refreshOmniBar(const QStringList &flags);
 
 signals:
-    void globalSeekTo(RVA address);
-    void cursorAddressChanged(RVA address);
+    void cursorAddressChanged(RVA offset); // TODO cursor should be handled by its own widget
 
 public slots:
 
@@ -174,18 +168,23 @@ private slots:
     void on_actionAsmOptions_triggered();
 
 private:
+    CutterCore       *core;
+    QDockWidget      *graphDock;
     QDockWidget      *asmDock;
     QDockWidget      *calcDock;
     Omnibar          *omnibar;
     SideBar          *sideBar;
+    MemoryWidget     *memoryDock;
+    Notepad          *notepadDock;
 
     bool doLock;
     void refreshMem();
     ut64 hexdumpTopOffset;
     ut64 hexdumpBottomOffset;
+    RVA cursorAddress;
     QString filename;
-    QList<DockWidget *> dockWidgets;
-    Ui::MainWindow   *ui;
+    QList<QDockWidget *> dockWidgets;
+    std::unique_ptr<Ui::MainWindow> ui;
     Highlighter      *highlighter;
     AsciiHighlighter *hex_highlighter;
     GraphicsBar      *graphicsBar;
@@ -206,19 +205,15 @@ private:
     ConsoleWidget    *consoleWidget;
     RadareWebServer  webserver;
 
-    RVA cursor_address;
-    QList<QAction *> asmSyntaxes;
-
     void openProject(const QString &project_name);
     void openNewFile(const QString &fn, int anal_level, QList<QString> advanced);
 
     void toggleDockWidget(DockWidget *dock_widget);
 
 public:
-    RVA getCursorAddress() const        { return cursor_address; }
-    void setCursorAddress(RVA addr);
-
+    RVA getCursorAddress() const        { return cursorAddress; }
     QString getFilename() const         { return filename; }
+    void setCursorAddress(RVA addr);
 };
 
 #endif // MAINWINDOW_H

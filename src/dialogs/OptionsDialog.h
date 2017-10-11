@@ -3,15 +3,12 @@
 
 #include <QDialog>
 #include <QStringList>
+#include <memory>
 #include "cutter.h"
-#include "analthread.h"
+#include "AnalThread.h"
+#include "ui_OptionsDialog.h"
 
 class MainWindow;
-
-namespace Ui
-{
-    class OptionsDialog;
-}
 
 class OptionsDialog : public QDialog
 {
@@ -44,13 +41,14 @@ private slots:
 private:
     AnalThread analThread;
     MainWindow *main;
+    CutterCore *core;
     int defaultAnalLevel;
 
     QString analysisDescription(int level);
 
     void updateCPUComboBox();
 public:
-    Ui::OptionsDialog *ui;
+    std::unique_ptr<Ui::OptionsDialog> ui;
     QString getSelectedArch();
     QString getSelectedCPU();
     int getSelectedBits();

@@ -4,7 +4,7 @@
 #include <QMessageBox>
 
 #include "MainWindow.h"
-#include "dialogs/NewfileDialog.h"
+#include "dialogs/NewFileDialog.h"
 #include "dialogs/OptionsDialog.h"
 
 int main(int argc, char *argv[])
@@ -51,8 +51,6 @@ int main(int argc, char *argv[])
         if (msg.exec() == QMessageBox::No)
             return 1;
     }
-
-
 
     bool anal_level_specified = false;
     int anal_level = 0;

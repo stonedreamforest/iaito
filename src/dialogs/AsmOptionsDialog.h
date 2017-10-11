@@ -4,6 +4,7 @@
 
 #include <QDialog>
 #include <QPushButton>
+#include <memory>
 
 #include "cutter.h"
 
@@ -17,16 +18,14 @@ class AsmOptionsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AsmOptionsDialog(CutterCore *core, QWidget *parent = nullptr);
+    explicit AsmOptionsDialog(QWidget *parent = nullptr);
     ~AsmOptionsDialog();
 
 private:
     CutterCore *core;
-
-    Ui::AsmOptionsDialog *ui;
+    std::unique_ptr<Ui::AsmOptionsDialog> ui;
 
     void updateFromVars();
-
     void saveAsDefault();
     void resetToDefault();
 

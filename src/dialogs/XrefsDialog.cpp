@@ -5,12 +5,12 @@
 
 #include <QJsonArray>
 
-XrefsDialog::XrefsDialog(MainWindow *main, QWidget *parent) :
+XrefsDialog::XrefsDialog(QWidget *parent) :
     QDialog(parent),
     addr(0),
     func_name(QString::null),
     ui(new Ui::XrefsDialog),
-    main(main)
+    core(CutterCore::getInstance())
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & (~Qt::WindowContextHelpButtonHint));
@@ -20,16 +20,13 @@ XrefsDialog::XrefsDialog(MainWindow *main, QWidget *parent) :
     asm_docu->setDocumentMargin(10);
 
     // Syntax highlight
-    highlighter = new Highlighter(this->main, ui->previewTextEdit->document());
+    highlighter = new Highlighter(ui->previewTextEdit->document());
 
     // Highlight current line
     connect(ui->previewTextEdit, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 }
 
-XrefsDialog::~XrefsDialog()
-{
-    delete ui;
-}
+XrefsDialog::~XrefsDialog() {}
 
 void XrefsDialog::fillRefs(QList<XrefDescription> refs, QList<XrefDescription> xrefs)
 {
@@ -40,10 +37,10 @@ void XrefsDialog::fillRefs(QList<XrefDescription> refs, QList<XrefDescription> x
 
         QTreeWidgetItem *tempItem = new QTreeWidgetItem();
         tempItem->setText(0, RAddressString(xref.to));
-        tempItem->setText(1, main->core->disassembleSingleInstruction(xref.from));
+        tempItem->setText(1, core->disassembleSingleInstruction(xref.from));
         tempItem->setData(0, Qt::UserRole, QVariant::fromValue(xref));
-        //tempItem->setToolTip( 0, this->main->core->cmd("pdi 10 @ " + refs.at(i).at(0)) );
-        //tempItem->setToolTip( 1, this->main->core->cmd("pdi 10 @ " + refs.at(i).at(0)) );
+        //tempItem->setToolTip( 0, this->core->cmd("pdi 10 @ " + refs.at(i).at(0)) );
+        //tempItem->setToolTip( 1, this->core->cmd("pdi 10 @ " + refs.at(i).at(0)) );
 
         ui->fromTreeWidget->insertTopLevelItem(0, tempItem);
     }
@@ -61,10 +58,10 @@ void XrefsDialog::fillRefs(QList<XrefDescription> refs, QList<XrefDescription> x
 
         QTreeWidgetItem *tempItem = new QTreeWidgetItem();
         tempItem->setText(0, RAddressString(xref.from));
-        tempItem->setText(1, main->core->disassembleSingleInstruction(xref.from));
+        tempItem->setText(1, core->disassembleSingleInstruction(xref.from));
         tempItem->setData(0, Qt::UserRole, QVariant::fromValue(xref));
-        //tempItem->setToolTip( 0, this->main->core->cmd("pdi 10 @ " + xrefs.at(i).at(0)) );
-        //tempItem->setToolTip( 1, this->main->core->cmd("pdi 10 @ " + xrefs.at(i).at(0)) );
+        //tempItem->setToolTip( 0, this->core->cmd("pdi 10 @ " + xrefs.at(i).at(0)) );
+        //tempItem->setToolTip( 1, this->core->cmd("pdi 10 @ " + xrefs.at(i).at(0)) );
 
         ui->toTreeWidget->insertTopLevelItem(0, tempItem);
     }
@@ -82,8 +79,9 @@ void XrefsDialog::on_fromTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int
     Q_UNUSED(column);
 
     XrefDescription xref = item->data(0, Qt::UserRole).value<XrefDescription>();
-    RAnalFunction *fcn = this->main->core->functionAt(xref.to);
-    this->main->seek(xref.to, fcn ? QString::fromUtf8(fcn->name) : QString::null, true);
+    RAnalFunction *fcn = this->core->functionAt(xref.to);
+    // TODO Seek
+    //this->main->seek(xref.to, fcn ? QString::fromUtf8(fcn->name) : QString::null, true);
 
     this->close();
 }
@@ -93,8 +91,9 @@ void XrefsDialog::on_toTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int c
     Q_UNUSED(column);
 
     XrefDescription xref = item->data(0, Qt::UserRole).value<XrefDescription>();
-    RAnalFunction *fcn = this->main->core->functionAt(xref.from);
-    this->main->seek(xref.from, fcn ? QString::fromUtf8(fcn->name) : QString::null, true);
+    RAnalFunction *fcn = this->core->functionAt(xref.from);
+    // TODO Seek
+    //this->main->seek(xref.from, fcn ? QString::fromUtf8(fcn->name) : QString::null, true);
 
     this->close();
 }
@@ -162,10 +161,10 @@ void XrefsDialog::updatePreview(RVA addr)
     QString disass;
 
     // is the address part of a function, so we can use pdf?
-    if (!main->core->cmdj("afij@" + QString::number(addr)).array().isEmpty())
-        disass = main->core->cmd("pdf @ " + QString::number(addr));
+    if (!core->cmdj("afij@" + QString::number(addr)).array().isEmpty())
+        disass = core->cmd("pdf @ " + QString::number(addr));
     else
-        disass = main->core->cmd("pd 10 @ " + QString::number(addr));
+        disass = core->cmd("pd 10 @ " + QString::number(addr));
 
     ui->previewTextEdit->setPlainText(disass.trimmed());
 
@@ -191,10 +190,10 @@ void XrefsDialog::fillRefsForAddress(RVA addr, QString name, bool whole_function
     // Get Refs and Xrefs
 
     // refs = calls q hace esa funcion
-    QList<XrefDescription> refs = main->core->getXRefs(addr, false, whole_function);
+    QList<XrefDescription> refs = core->getXRefs(addr, false, whole_function);
 
     // xrefs = calls a esa funcion
-    QList<XrefDescription> xrefs = main->core->getXRefs(addr, true, whole_function);
+    QList<XrefDescription> xrefs = core->getXRefs(addr, true, whole_function);
 
     fillRefs(refs, xrefs);
 }

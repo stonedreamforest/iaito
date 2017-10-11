@@ -3,31 +3,29 @@ TEMPLATE = app
 TARGET = cutter
 
 # The application version
-win32 {
-    VERSION = 1.0
-    # Generate debug symbols in release mode
-    QMAKE_CXXFLAGS_RELEASE += -Zi   # Compiler
-    QMAKE_LFLAGS_RELEASE += /DEBUG  # Linker
-} else {
-    VERSION = 1.0-dev
-}
+VERSION = 1.0
 
 ICON = img/Enso.icns
 
 QT += core gui widgets webengine webenginewidgets
-
 QT_CONFIG -= no-pkg-config
-
-CONFIG += debug c++11
+CONFIG += c++11
 
 # Define the preprocessor macro to get the application version in our application.
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
+INCLUDEPATH *= .
+
+win32 {
+    # Generate debug symbols in release mode
+    QMAKE_CXXFLAGS_RELEASE += -Zi   # Compiler
+    QMAKE_LFLAGS_RELEASE += /DEBUG  # Linker
+}
 
 macx {
     QMAKE_CXXFLAGS = -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
 }
 
-INCLUDEPATH *= .
 
 unix:exists(/usr/local/include/libr) {
     INCLUDEPATH += /usr/local/include/libr
@@ -36,36 +34,13 @@ unix:exists(/usr/local/include/libr) {
 SOURCES += \
     main.cpp \
     cutter.cpp \
-    widgets/pieview.cpp \
-    widgets/sectionswidget.cpp \
-    widgets/codegraphic.cpp \
-    widgets/notepad.cpp \
-    widgets/functionswidget.cpp \
-    widgets/importswidget.cpp \
-    widgets/symbolswidget.cpp \
-    widgets/relocswidget.cpp \
-    widgets/commentswidget.cpp \
-    widgets/stringswidget.cpp \
-    widgets/flagswidget.cpp \
-    widgets/exportswidget.cpp \
-    widgets/sdbdock.cpp \
-    analthread.cpp \
-    widgets/sidebar.cpp \
-    widgets/omnibar.cpp \
-    widgets/dashboard.cpp \
-    widgets/sectionsdock.cpp \
-    widgets/consolewidget.cpp \
-    radarewebserver.cpp \
-    widgets/entrypointwidget.cpp \
     widgets/DisassemblerGraphView.cpp \
     widgets/MemoryWidget.cpp \
     utils/RichTextPainter.cpp \
     dialogs/OptionsDialog.cpp \
     dialogs/AboutDialog.cpp \
-    dialogs/AsmoptionsDialog.cpp \
     dialogs/CommentsDialog.cpp \
     dialogs/FlagDialog.cpp \
-    dialogs/NewfileDialog.cpp \
     dialogs/RenameDialog.cpp \
     dialogs/XrefsDialog.cpp \
     MainWindow.cpp \
@@ -73,32 +48,34 @@ SOURCES += \
     utils/HexAsciiHighlighter.cpp \
     utils/HexHighlighter.cpp \
     utils/Highlighter.cpp \
-    dialogs/CreatenewDialog.cpp \
-    utils/MdHighlighter.cpp
+    utils/MdHighlighter.cpp \
+    dialogs/AsmOptionsDialog.cpp \
+    dialogs/CreateNewDialog.cpp \
+    dialogs/NewFileDialog.cpp \
+    RadareWebServer.cpp \
+    AnalThread.cpp \
+    widgets/CodeGraphic.cpp \
+    widgets/CommentsWidget.cpp \
+    widgets/ConsoleWidget.cpp \
+    widgets/Dashboard.cpp \
+    widgets/EntrypointWidget.cpp \
+    widgets/ExportsWidget.cpp \
+    widgets/FlagsWidget.cpp \
+    widgets/FunctionsWidget.cpp \
+    widgets/ImportsWidget.cpp \
+    widgets/Notepad.cpp \
+    widgets/Omnibar.cpp \
+    widgets/PieView.cpp \
+    widgets/RelocsWidget.cpp \
+    widgets/SdbDock.cpp \
+    widgets/SectionsDock.cpp \
+    widgets/SectionsWidget.cpp \
+    widgets/Sidebar.cpp \
+    widgets/StringsWidget.cpp \
+    widgets/SymbolsWidget.cpp \
+    menus/DisassemblyContextMenu.cpp
 
 HEADERS  += \
-    widgets/pieview.h \
-    widgets/sectionswidget.h \
-    widgets/codegraphic.h \
-    widgets/notepad.h \
-    widgets/functionswidget.h \
-    widgets/importswidget.h \
-    widgets/symbolswidget.h \
-    widgets/relocswidget.h \
-    widgets/commentswidget.h \
-    widgets/stringswidget.h \
-    widgets/flagswidget.h \
-    widgets/exportswidget.h \
-    widgets/sdbdock.h \
-    analthread.h \
-    widgets/sidebar.h \
-    widgets/omnibar.h \
-    widgets/dashboard.h \
-    widgets/sectionsdock.h \
-    widgets/dockwidget.h \
-    widgets/consolewidget.h \
-    radarewebserver.h \
-    widgets/entrypointwidget.h \
     cutter.h \
     widgets/DisassemblerGraphView.h \
     widgets/MemoryWidget.h \
@@ -110,33 +87,41 @@ HEADERS  += \
     dialogs/FlagDialog.h \
     dialogs/RenameDialog.h \
     dialogs/XrefsDialog.h \
-    dialogs/CreatenewDialog.h \
     utils/Helpers.h \
     utils/HexAsciiHighlighter.h \
     utils/HexHighlighter.h \
     MainWindow.h \
     utils/Highlighter.h \
     utils/MdHighlighter.h \
-    dialogs/NewfileDialog.h \
     Settings.h \
-    dialogs/OptionsDialog.h
+    dialogs/OptionsDialog.h \
+    dialogs/CreateNewDialog.h \
+    dialogs/NewFileDialog.h \
+    RadareWebServer.h \
+    AnalThread.h \
+    widgets/CodeGraphic.h \
+    widgets/CommentsWidget.h \
+    widgets/ConsoleWidget.h \
+    widgets/Dashboard.h \
+    widgets/DockWidget.h \
+    widgets/EntrypointWidget.h \
+    widgets/ExportsWidget.h \
+    widgets/FlagsWidget.h \
+    widgets/FunctionsWidget.h \
+    widgets/ImportsWidget.h \
+    widgets/Notepad.h \
+    widgets/Omnibar.h \
+    widgets/PieView.h \
+    widgets/RelocsWidget.h \
+    widgets/SdbDock.h \
+    widgets/SectionsDock.h \
+    widgets/SectionsWidget.h \
+    widgets/Sidebar.h \
+    widgets/StringsWidget.h \
+    widgets/SymbolsWidget.h \
+    menus/DisassemblyContextMenu.h
 
 FORMS    += \
-    widgets/notepad.ui \
-    widgets/functionswidget.ui \
-    widgets/importswidget.ui \
-    widgets/symbolswidget.ui \
-    widgets/relocswidget.ui \
-    widgets/commentswidget.ui \
-    widgets/stringswidget.ui \
-    widgets/flagswidget.ui \
-    widgets/exportswidget.ui \
-    widgets/sdbdock.ui \
-    widgets/sidebar.ui \
-    widgets/dashboard.ui \
-    widgets/sectionsdock.ui \
-    widgets/consolewidget.ui \
-    widgets/entrypointwidget.ui \
     widgets/MemoryWidget.ui \
     dialogs/AboutDialog.ui \
     dialogs/AsmOptionsDialog.ui \
@@ -144,10 +129,25 @@ FORMS    += \
     dialogs/FlagDialog.ui \
     dialogs/RenameDialog.ui \
     dialogs/XrefsDialog.ui \
-    dialogs/CreatenewDialog.ui \
     dialogs/NewfileDialog.ui \
     dialogs/OptionsDialog.ui \
-    MainWindow.ui
+    MainWindow.ui \
+    dialogs/CreateNewDialog.ui \
+    widgets/CommentsWidget.ui \
+    widgets/ConsoleWidget.ui \
+    widgets/Dashboard.ui \
+    widgets/EntrypointWidget.ui \
+    widgets/FlagsWidget.ui \
+    widgets/ExportsWidget.ui \
+    widgets/FunctionsWidget.ui \
+    widgets/ImportsWidget.ui \
+    widgets/Notepad.ui \
+    widgets/SdbDock.ui \
+    widgets/RelocsWidget.ui \
+    widgets/SectionsDock.ui \
+    widgets/Sidebar.ui \
+    widgets/StringsWidget.ui \
+    widgets/SymbolsWidget.ui
 
 RESOURCES += \
     resources.qrc

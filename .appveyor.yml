@@ -1,0 +1,68 @@
+version: '1.0-git-{build}'
+skip_tags: true
+image: 'Visual Studio 2015'
+clone_depth: 1
+
+# Build configuration
+configuration:
+  - Release
+
+# Branches to build
+branches:
+  only:
+    - master
+
+# Environment
+environment:
+  PYTHON: 'C:\\Python36-x64'
+  BDIR: build-cmake
+  NINJA_URL: https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-win.zip
+  QTDIR: 'C:\Qt\5.9.1\msvc2015_64'
+
+install:
+  - cmd: git submodule init && git submodule update
+  - cmd: if defined BDIR ( %PYTHON%\python.exe -m pip install meson && COPY %PYTHON%\Scripts\meson.py radare2\meson.py )
+  - cmd: if defined NINJA_URL ( powershell -Command wget %NINJA_URL% -OutFile radare2\ninja.zip && unzip radare2\ninja.zip -d radare2\ )
+
+before_build:
+  # Build r2 and generate sln
+  - cmd: cd radare2 && set "PATH=%PYTHON%;%PATH%" && call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64 && meson.bat --release --shared && sys\meson_install.bat --with-static dist && cd ..
+  # Build cutter
+  - cmd: set "PATH=%PATH%;%QTDIR%\bin;" && call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64  && cd src && qmake -config release -tp vc cutter.pro && cd ..
+
+# Build config
+build:
+  project: src\cutter.vcxproj
+
+after_build:
+  # Install r2
+  - cmd: move radare2\dist cutter
+  - cmd: cd cutter && dir
+  - cmd: for %%v in (*.dll) do echo %%v
+  - cmd: for %%v in (*.dll) do ren %%v lib%%v
+  - cmd: cd ..
+  # Install cutter
+  - cmd: windeployqt src\release\cutter.exe --dir cutter
+  - cmd: move src\release\cutter.exe cutter\
+  - cmd: set "PATH=C:\mingw\bin;C:\mingw\msys\1.0\bin;%PATH%" && zip -r cutter.zip cutter
+
+# Tests
+test: off
+
+# Artifacts
+artifacts:
+  - path: cutter.zip
+    name: Cutter
+
+#deploy:
+#  release: cutter-1.0-$(appveyor_build_version)
+#  description: 'Cutter Windows'
+#  provider: GitHub
+#  auth_token:
+#    secure: 2SmsqS2RaX2N5c9UwUcfBwNmMX64FfPAZFShLyxIkZXiC8vLaYCHToWxBYEuWRSk
+#  artifact: Cutter
+#  draft: true
+#  prerelease: true
+#  on:
+#    branch: master
+#    appveyor_repo_tag: false
