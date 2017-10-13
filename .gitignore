@@ -60,3 +60,11 @@ x64/
 *.dir/
 build*/
 *.orig
+*.sln
+*.db
+*.vcxproj
+*.filters
+*.user
+*.ilk
+*.exe
+*.pdb
